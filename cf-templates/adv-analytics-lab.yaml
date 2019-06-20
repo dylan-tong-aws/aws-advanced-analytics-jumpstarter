@@ -1,0 +1,152 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: This template creates an isolated PoC environment for Redshift Spectrum
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: Redshift Cluster Configuration
+        Parameters:
+          - pClusterType
+          - pNumberOfNodes
+          - pNodeType
+          - pDBPortNumber
+          - pDatabaseName
+          - pMasterUsername
+          - pMasterUserPassword
+    ParameterLabels:
+      pClusterType:
+        default: Cluster Type
+      pNodeType:
+        default: Node Instance Type
+      pNumberOfNodes:
+        default: Number of Compute Nodes
+      pDBPortNumber:
+        default: Listener Port
+      pDatabaseName:
+        default: Database Name
+      pMasterUsername:
+        default: DB User Name
+      pMasterUserPassword:
+        default: DB User Password
+      pClusterSubnet:
+        default: DB Cluster Subnet
+      pDBSecurityGroups:
+        default: DB Cluster Security Groups
+Parameters:
+  pDatabaseName:
+    Description: The name of the first database to be created when the cluster is created
+    Type: String
+    Default: workshop
+    AllowedPattern: '([a-z]|[0-9])+'
+    MinLength: 1
+  pClusterType:
+    Description: The type of cluster
+    Type: String
+    Default: single-node
+    AllowedValues:
+      - single-node
+      - multi-node
+  pNumberOfNodes:
+    Description: >-
+      The number of compute nodes in the cluster. For multi-node clusters, the
+      NumberOfNodes parameter must be greater than 1
+    Type: String
+    Default: '1'
+    MinLength: 1
+  pNodeType:
+    Description: The type of node to be provisioned
+    Type: String
+    Default: dc2.large
+    AllowedValues:
+      - ds2.xlarge
+      - ds2.8xlarge
+      - dc1.large
+      - dc1.8xlarge
+      - dc2.large
+      - dc2.8xlarge
+  pMasterUsername:
+    Description: >-
+      The user name that is associated with the master user account for the
+      cluster that is being created
+    Type: String
+    Default: admin
+    AllowedPattern: '([a-z])([a-z]|[0-9])*'
+  pMasterUserPassword:
+    Description: >-
+      The password that is associated with the master user account for the
+      cluster that is being created.
+    Type: String
+    NoEcho: 'true'
+    MinLength: 8
+    MaxLength: 64
+  pDBPortNumber:
+    Description: The port number on which the cluster accepts incoming connections.
+    Type: Number
+    Default: '5439'
+  pClusterSubnet:
+    Description: Select the subnets where the cluster can be deployed
+    Type: 'List<AWS::EC2::Subnet::Id>'
+  pDBSecurityGroups:
+    Description: security groups to attach to your Redshift cluster
+    Type: 'List<AWS::EC2::SecurityGroup::Id>'
+Conditions:
+  IsMultiNodeCluster: !Equals 
+    - !Ref pClusterType
+    - multi-node
+Resources:
+  rRedshiftCluster:
+    Type: 'AWS::Redshift::Cluster'
+    DependsOn: rWorkshopRole
+    Properties:
+      ClusterType: !Ref pClusterType
+      NumberOfNodes: !If 
+        - IsMultiNodeCluster
+        - !Ref pNumberOfNodes
+        - !Ref 'AWS::NoValue'
+      NodeType: !Ref pNodeType
+      DBName: !Ref pDatabaseName
+      MasterUsername: !Ref pMasterUsername
+      MasterUserPassword: !Ref pMasterUserPassword
+      ClusterSubnetGroupName: !Ref rRedshiftClusterSubnetGroup
+      VpcSecurityGroupIds: !Ref pDBSecurityGroups
+      PubliclyAccessible: 'false'
+      Port: !Ref pDBPortNumber
+      IamRoles:
+        - 'Fn::GetAtt':
+            - rWorkshopRole
+            - Arn
+  rWorkshopRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - redshift.amazonaws.com
+                - glue.amazonaws.com
+                - sagemaker.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Path: /
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
+        - 'arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole'
+        - 'arn:aws:iam::aws:policy/AmazonSageMakerFullAccess'
+  rRedshiftClusterSubnetGroup:
+    Type: 'AWS::Redshift::ClusterSubnetGroup'
+    Properties:
+      Description: Cluster subnet group
+      SubnetIds: !Ref pClusterSubnet
+Outputs:
+  ClusterEndpoint:
+    Description: Cluster endpoint
+    Value: !Sub '${rRedshiftCluster.Endpoint.Address}:${rRedshiftCluster.Endpoint.Port}'
+  ClusterName:
+    Description: Name of cluster
+    Value: !Ref rRedshiftCluster
+  WorkshopRole:
+    Description: >-
+      IAM Role that the cluster and db users can assume. Required to setup
+      Redshift Spectrum
+    Value: !GetAtt rWorkshopRole.Arn
