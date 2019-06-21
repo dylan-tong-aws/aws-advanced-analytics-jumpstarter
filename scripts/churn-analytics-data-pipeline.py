@@ -65,7 +65,7 @@ def main():
 
     # Downloading the data from S3 into a Dataframe
     raw_df = spark.read.csv(('s3://' + os.path.join(args['S3_INPUT_BUCKET'], args['S3_INPUT_KEY_PREFIX'],
-                                   'churn.csv')), header=False, schema=callstats_schema)
+                                   'churn.csv')), header=True, schema=callstats_schema)
     
     categoricalColumns = ["State", "AreaCode", "IntlPlan", "VMailPlan"]
     stages = [] # stages in our Pipeline
