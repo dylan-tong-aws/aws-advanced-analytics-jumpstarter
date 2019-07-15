@@ -1,7 +1,9 @@
 # AWS Advanced Analytics Jumpstarter
 Collection of labs designed to enable users to perform advanced analytics on AWS
 
-Contact: dylatong@amazon.com
+author: dylatong@amazon.com
+
+---
 
 **I. SageMaker Predictive Analytics (est. 1.5 hours)**
 
