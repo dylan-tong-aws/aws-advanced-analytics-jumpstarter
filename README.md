@@ -6,7 +6,7 @@ author: dylatong@amazon.com
 ## Quick Launch for base lab environment (us-west-2)
 
 <a href="https://console.aws.amazon.com/cloudformation/home?region=us-west-
-2#/stacks/new?stackName=shopbystyle-prototype&templateURL=https://reinvent2018-sagemaker-pytorch.s3-us-west-2.amazonaws.com/cloudformation/workshops/churn-analytics/adv-analytics-lab.yaml">
+2#/stacks/new?stackName=adv-analytics-lab&templateURL=https://reinvent2018-sagemaker-pytorch.s3-us-west-2.amazonaws.com/cloudformation/workshops/churn-analytics/adv-analytics-lab.yaml">
 ![launch stack button](/cf-templates/cloudformation-launch-stack.png)</a>
 
 ---
