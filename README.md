@@ -7,7 +7,7 @@ author: dylatong@amazon.com
 
 <a href="https://console.aws.amazon.com/cloudformation/home?region=us-west-
 2#/stacks/new?stackName=shopbystyle-prototype&templateURL=https://reinvent2018-sagemaker-pytorch.s3-us-west-2.amazonaws.com/cloudformation/workshops/churn-analytics/adv-analytics-lab.yaml">
-![launch stack button](/images/cloudformation-launch-stack.png)</a>
+![launch stack button](/cf-templates/cloudformation-launch-stack.png)</a>
 
 ---
 
