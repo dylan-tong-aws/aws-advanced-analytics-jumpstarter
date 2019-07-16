@@ -3,6 +3,12 @@ Collection of labs designed to enable users to perform advanced analytics on AWS
 
 author: dylatong@amazon.com
 
+## Quick Launch for base lab environment (us-west-2)
+
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-west-
+2#/stacks/new?stackName=shopbystyle-prototype&templateURL=https://reinvent2018-sagemaker-pytorch.s3-us-west-2.amazonaws.com/cloudformation/workshops/churn-analytics/adv-analytics-lab.yaml">
+![launch stack button](/images/cloudformation-launch-stack.png)</a>
+
 ---
 
 **I. SageMaker Predictive Analytics (est. 1.5 hours)**
