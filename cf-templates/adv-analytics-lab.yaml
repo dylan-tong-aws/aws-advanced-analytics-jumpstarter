@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: This template creates an isolated PoC environment for Redshift Spectrum
+Description: This template creates an environment for the Advanced Analytics jumpstart workshop. It launches a minimalistic enviornment consisting of a Redshift cluster.
 Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:
